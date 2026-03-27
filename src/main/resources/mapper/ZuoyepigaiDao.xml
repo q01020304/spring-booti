@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.ZuoyepigaiDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.entity.ZuoyepigaiEntity" id="zuoyepigaiMap">
+        <result property="dingdanbianhao" column="dingdanbianhao"/>
+        <result property="kechengbianhao" column="kechengbianhao"/>
+        <result property="kechengmingcheng" column="kechengmingcheng"/>
+        <result property="jiaoshigonghao" column="jiaoshigonghao"/>
+        <result property="jiaoshixingming" column="jiaoshixingming"/>
+        <result property="xuehao" column="xuehao"/>
+        <result property="xueyuanxingming" column="xueyuanxingming"/>
+        <result property="xueyuanshouji" column="xueyuanshouji"/>
+        <result property="wanchengtupian" column="wanchengtupian"/>
+        <result property="zuoyemingcheng" column="zuoyemingcheng"/>
+        <result property="zuoyechengji" column="zuoyechengji"/>
+        <result property="pingyu" column="pingyu"/>
+        <result property="pigaishijian" column="pigaishijian"/>
+    </resultMap>
+
+	<select id="selectListVO"
+		resultType="com.entity.vo.ZuoyepigaiVO" >
+		SELECT * FROM zuoyepigai  zuoyepigai         
+        <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+	
+	<select id="selectVO"
+		resultType="com.entity.vo.ZuoyepigaiVO" >
+		SELECT  zuoyepigai.* FROM zuoyepigai  zuoyepigai 	
+ 		<where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+
+    <select id="selectListView"
+		resultType="com.entity.view.ZuoyepigaiView" >
+
+		SELECT  zuoyepigai.* FROM zuoyepigai  zuoyepigai 	        
+        <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+	
+	<select id="selectView"
+		resultType="com.entity.view.ZuoyepigaiView" >
+		SELECT * FROM zuoyepigai  zuoyepigai <where> 1=1 ${ew.sqlSegment}</where>
+	</select>
+	
+
+    <select id="selectValue" resultType="map" >
+        SELECT ${params.xColumn}, ROUND(sum(${params.yColumn}),1) total FROM zuoyepigai
+        <where> 1=1 ${ew.sqlSegment}</where>
+        group by ${params.xColumn}
+    </select>
+
+    <select id="selectTimeStatValue" resultType="map" >
+        <if test = 'params.timeStatType == "日"'>
+                SELECT DATE_FORMAT(${params.xColumn},'%Y-%m-%d') ${params.xColumn}, sum(${params.yColumn}) total FROM zuoyepigai
+                <where> 1=1 ${ew.sqlSegment}</where>
+                group by DATE_FORMAT(${params.xColumn},'%Y-%m-%d')
+        </if>
+        <if test = 'params.timeStatType == "月"'>
+                SELECT DATE_FORMAT(${params.xColumn},'%Y-%m') ${params.xColumn}, sum(${params.yColumn}) total FROM zuoyepigai
+                <where> 1=1 ${ew.sqlSegment}</where>
+                group by DATE_FORMAT(${params.xColumn},'%Y-%m')
+        </if>
+        <if test = 'params.timeStatType == "年"'>
+                SELECT DATE_FORMAT(${params.xColumn},'%Y') ${params.xColumn}, sum(${params.yColumn}) total FROM zuoyepigai
+                <where> 1=1 ${ew.sqlSegment}</where>
+                group by DATE_FORMAT(${params.xColumn},'%Y')
+        </if>
+    </select>
+
+    <select id="selectGroup" resultType="map" >
+        SELECT ${params.column} , count(1) total FROM zuoyepigai
+        <where> 1=1 ${ew.sqlSegment}</where>
+        group by ${params.column}
+    </select>
+
+    <select id="zuoyechengjiSectionStat" resultType="map" >
+        SELECT '不及格' as zuoyechengji,case when t.不及格 is null then 0 else t.不及格 end total
+        from
+        (select
+        sum(case when zuoyechengji &lt;= 59 then 1 else 0 end) as 不及格,        sum(case when zuoyechengji >= 60 and zuoyechengji &lt;= 70 then 1 else 0 end) as 及格,        sum(case when zuoyechengji >= 70 and zuoyechengji &lt;= 80 then 1 else 0 end) as 中等,        sum(case when zuoyechengji >= 80 and zuoyechengji &lt;= 90 then 1 else 0 end) as 良好,        sum(case when zuoyechengji >= 90 then 1 else 0 end) as 优秀        from zuoyepigai
+        <where> 1=1 ${ew.sqlSegment}</where>
+        ) t
+        union all
+        SELECT '及格' as zuoyechengji,case when t.及格 is null then 0 else t.及格 end total
+        from
+        (select
+        sum(case when zuoyechengji &lt;= 59 then 1 else 0 end) as 不及格,        sum(case when zuoyechengji >= 60 and zuoyechengji &lt;= 70 then 1 else 0 end) as 及格,        sum(case when zuoyechengji >= 70 and zuoyechengji &lt;= 80 then 1 else 0 end) as 中等,        sum(case when zuoyechengji >= 80 and zuoyechengji &lt;= 90 then 1 else 0 end) as 良好,        sum(case when zuoyechengji >= 90 then 1 else 0 end) as 优秀        from zuoyepigai
+        <where> 1=1 ${ew.sqlSegment}</where>
+        ) t
+        union all
+        SELECT '中等' as zuoyechengji,case when t.中等 is null then 0 else t.中等 end total
+        from
+        (select
+        sum(case when zuoyechengji &lt;= 59 then 1 else 0 end) as 不及格,        sum(case when zuoyechengji >= 60 and zuoyechengji &lt;= 70 then 1 else 0 end) as 及格,        sum(case when zuoyechengji >= 70 and zuoyechengji &lt;= 80 then 1 else 0 end) as 中等,        sum(case when zuoyechengji >= 80 and zuoyechengji &lt;= 90 then 1 else 0 end) as 良好,        sum(case when zuoyechengji >= 90 then 1 else 0 end) as 优秀        from zuoyepigai
+        <where> 1=1 ${ew.sqlSegment}</where>
+        ) t
+        union all
+        SELECT '良好' as zuoyechengji,case when t.良好 is null then 0 else t.良好 end total
+        from
+        (select
+        sum(case when zuoyechengji &lt;= 59 then 1 else 0 end) as 不及格,        sum(case when zuoyechengji >= 60 and zuoyechengji &lt;= 70 then 1 else 0 end) as 及格,        sum(case when zuoyechengji >= 70 and zuoyechengji &lt;= 80 then 1 else 0 end) as 中等,        sum(case when zuoyechengji >= 80 and zuoyechengji &lt;= 90 then 1 else 0 end) as 良好,        sum(case when zuoyechengji >= 90 then 1 else 0 end) as 优秀        from zuoyepigai
+        <where> 1=1 ${ew.sqlSegment}</where>
+        ) t
+        union all
+        SELECT '优秀' as zuoyechengji,case when t.优秀 is null then 0 else t.优秀 end total
+        from
+        (select
+        sum(case when zuoyechengji &lt;= 59 then 1 else 0 end) as 不及格,        sum(case when zuoyechengji >= 60 and zuoyechengji &lt;= 70 then 1 else 0 end) as 及格,        sum(case when zuoyechengji >= 70 and zuoyechengji &lt;= 80 then 1 else 0 end) as 中等,        sum(case when zuoyechengji >= 80 and zuoyechengji &lt;= 90 then 1 else 0 end) as 良好,        sum(case when zuoyechengji >= 90 then 1 else 0 end) as 优秀        from zuoyepigai
+        <where> 1=1 ${ew.sqlSegment}</where>
+        ) t
+    </select>
+
+
+
+</mapper>
