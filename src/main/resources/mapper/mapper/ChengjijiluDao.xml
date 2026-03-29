@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ChengjijiluDao">
+
+    <select id="selectStudentTrend" resultType="java.util.HashMap">
+        SELECT DATE_FORMAT(kaoshishijian, '%Y-%m-%d') AS riqi,
+               chengji,
+               kaoshileixing,
+               kecheng_id AS kechengId,
+               kechengmingcheng
+        FROM chengjijilu
+        WHERE xueyuan_id = #{xueyuanId}
+        <if test="kechengId != null">
+            AND kecheng_id = #{kechengId}
+        </if>
+        ORDER BY kaoshishijian ASC
+    </select>
+
+    <select id="selectCourseAvgTrend" resultType="java.util.HashMap">
+        SELECT DATE_FORMAT(kaoshishijian, '%Y-%m-%d') AS riqi,
+               ROUND(AVG(chengji), 2) AS avgScore,
+               COUNT(1) AS recordCount
+        FROM chengjijilu
+        WHERE kecheng_id = #{kechengId}
+        GROUP BY DATE_FORMAT(kaoshishijian, '%Y-%m-%d')
+        ORDER BY riqi ASC
+    </select>
+
+</mapper>
